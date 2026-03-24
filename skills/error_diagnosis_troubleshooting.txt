@@ -1,0 +1,3 @@
+Error diagnosis troubleshooting
+
+Use when the workflow fails, tools need retries, guardrails trigger, or output quality needs diagnosis and recovery steps.

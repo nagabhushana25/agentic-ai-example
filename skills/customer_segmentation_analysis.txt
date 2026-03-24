@@ -1,0 +1,3 @@
+Customer segmentation analysis
+
+Use when the request involves grouping customers by behavior, demographics, or engagement metrics. Prefer structured outputs, assumptions, and explainable business labels.

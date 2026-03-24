@@ -1,0 +1,3 @@
+RAG document search
+
+Use when the user needs semantic retrieval over project documents, grounded responses, chunk ranking, and context-aware summarization.

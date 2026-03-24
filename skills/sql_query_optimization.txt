@@ -1,0 +1,3 @@
+SQL query optimization
+
+Use when Databricks or warehouse workloads need performance tuning, better joins, indexing strategy discussion, or query simplification.
