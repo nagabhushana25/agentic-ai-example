@@ -40,7 +40,7 @@ def build_graph():
         return result
 
     def final_node(state: WorkflowState) -> WorkflowState:
-        return finalize_response(state, memory)
+        return finalize_response(state, memory, settings)
 
     graph = StateGraph(WorkflowState)
     graph.add_node("orchestrator", orchestrator_node)
