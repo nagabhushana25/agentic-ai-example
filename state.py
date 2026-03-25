@@ -12,6 +12,8 @@ class WorkflowState(TypedDict, total=False):
     user_input: str
     sanitized_input: str
     next_agent: AgentName
+    vector_search_done: bool
+    databricks_done: bool
     retrieved_context: list[str]
     databricks_result: str
     skill_matches: list[str]
