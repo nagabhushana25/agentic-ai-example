@@ -1,0 +1,8 @@
+order_id,customer_id,product_id,order_date,quantity,gross_amount,discount_amount,return_amount,order_status,sales_channel
+O1001,C001,P101,2026-03-01,2,2400,200,0,completed,direct
+O1002,C002,P103,2026-03-02,1,2200,0,0,completed,partner
+O1003,C001,P104,2026-03-03,3,2700,200,100,completed,direct
+O1004,C003,P102,2026-03-04,2,600,0,0,cancelled,online
+O1005,C004,P101,2026-03-05,1,1200,100,0,completed,online
+O1006,C002,P102,2026-03-06,4,1200,100,50,completed,partner
+O1007,C005,P105,2026-03-07,2,3600,300,0,completed,direct

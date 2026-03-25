@@ -1,0 +1,7 @@
+ticket_id,customer_id,created_at,resolved_at,priority,category,status,first_response_minutes,resolution_minutes,channel
+T001,C001,2026-03-01 09:00:00,2026-03-01 12:00:00,high,billing,resolved,20,180,email
+T002,C002,2026-03-02 10:30:00,2026-03-02 18:30:00,medium,technical,resolved,45,480,portal
+T003,C003,2026-03-03 08:00:00,,high,etl,open,30,,email
+T004,C004,2026-03-03 11:15:00,2026-03-03 13:00:00,low,access,resolved,15,105,chat
+T005,C001,2026-03-04 14:00:00,2026-03-05 14:30:00,critical,reporting,resolved,10,1470,portal
+T006,C005,2026-03-05 09:30:00,2026-03-05 11:30:00,medium,dashboard,resolved,25,120,email

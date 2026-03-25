@@ -1,0 +1,6 @@
+customer_id,customer_name,region,signup_date,status
+C001,Acme Corp,North,2025-01-10,active
+C002,Beta Ltd,South,2025-02-14,active
+C003,Gamma Inc,West,2024-11-05,inactive
+C004,Delta LLC,East,2025-03-01,active
+C005,Epsilon Retail,North,2025-06-20,active
