@@ -4,7 +4,7 @@ import math
 import re
 from pathlib import Path
 
-from project.config import Settings
+from config import Settings
 
 
 def _tokenize(text: str) -> set[str]:
