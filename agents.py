@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from project.config import Settings
-from project.memory_manager import MemoryManager
-from project.state import WorkflowState
-from project.tools import databricks_query, load_skill_library, vector_search
+from config import Settings
+from memory_manager import MemoryManager
+from state import WorkflowState
+from tools import (databricks_query, load_skill_library,
+                    vector_search,combined_context_search)
 
 
 @dataclass(slots=True)
@@ -59,7 +60,7 @@ def orchestrator_agent(state: WorkflowState, memory: MemoryManager, settings: Se
 
 def vector_search_agent(state: WorkflowState, settings: Settings) -> WorkflowState:
     trace = list(state.get("trace", []))
-    context = vector_search(state["sanitized_input"], settings)
+    context = combined_context_search(state["sanitized_input"], settings)
 
     if context:
         trace.append(f"vector_search_agent: retrieved {len(context)} knowledge chunks")

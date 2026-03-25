@@ -22,3 +22,5 @@ class WorkflowState(TypedDict, total=False):
     tool_calls: int
     validation_errors: list[str]
     trace: list[str]
+    retrieved_context: list[str]
+    etl_context: list[str]

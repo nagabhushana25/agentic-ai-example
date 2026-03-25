@@ -1,3 +1,6 @@
+-- silver_orders is derived from bronze_orders
+-- net_sales = gross_amount - discount_amount - return_amount
+
 create or replace view silver_orders as
 select
     order_id,

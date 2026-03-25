@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from project.state import WorkflowState
+from state import WorkflowState
 
 
 EMAIL_PATTERN = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")

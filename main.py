@@ -3,8 +3,8 @@ from __future__ import annotations
 from pprint import pprint
 from uuid import uuid4
 
-from project.graph import build_graph
-from project.guardrails import sanitize_input, validate_input, validate_output
+from graph import build_graph
+from guardrails import sanitize_input, validate_input, validate_output
 
 
 def main() -> None:

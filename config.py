@@ -19,9 +19,11 @@ class Settings:
     databricks_token: str = os.getenv("DATABRICKS_TOKEN", "")
     vector_top_k: int = int(os.getenv("VECTOR_TOP_K", "3"))
     tool_call_limit: int = int(os.getenv("TOOL_CALL_LIMIT", "6"))
-    memory_root: Path = field(default_factory=lambda: Path("project/memory"))
-    skills_root: Path = field(default_factory=lambda: Path("project/skills"))
-    docs_root: Path = field(default_factory=lambda: Path("project/knowledge"))
+    memory_root: Path = field(default_factory=lambda: Path("memory"))
+    skills_root: Path = field(default_factory=lambda: Path("skills"))
+    docs_root: Path = field(default_factory=lambda: Path("knowledge"))
+    etl_root: Path = field(default_factory=lambda: Path("etl"))
+    data_root: Path = field(default_factory=lambda: Path("data"))
 
     @property
     def llm_enabled(self) -> bool:

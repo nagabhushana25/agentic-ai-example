@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from project.config import Settings
+from config import Settings
 
 
 class MemoryManager:

@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from langgraph.graph import END, START, StateGraph
 
-from project.agents import (
+from agents import (
     MiddlewareManager,
     databricks_analyst_agent,
     finalize_response,
     orchestrator_agent,
     vector_search_agent,
 )
-from project.config import get_settings
-from project.memory_manager import MemoryManager
-from project.state import WorkflowState
+from config import get_settings
+from memory_manager import MemoryManager
+from state import WorkflowState
 
 
 def build_graph():

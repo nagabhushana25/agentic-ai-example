@@ -33,6 +33,30 @@ def vector_search(query: str, settings: Settings) -> list[str]:
     return [chunk for _, chunk in matches[: settings.vector_top_k]]
 
 
+def etl_search(query: str, settings: Settings) -> list[str]:
+    matches: list[tuple[float, str]] = []
+
+    for path in sorted(settings.etl_root.rglob("*.sql")):
+        content = path.read_text(encoding="utf-8").strip()
+        for chunk in [part.strip() for part in content.split("\n\n") if part.strip()]:
+            score = _score(query, chunk)
+            if score > 0:
+                matches.append((score, f"{path.name}: {chunk}"))
+
+    matches.sort(key=lambda item: item[0], reverse=True)
+    return [chunk for _, chunk in matches[: settings.vector_top_k]]
+
+
+def lineage_search(query: str, settings: Settings) -> list[str]:
+    return etl_search(query, settings)
+
+
+def combined_context_search(query: str, settings: Settings) -> list[str]:
+    knowledge_results = vector_search(query, settings)
+    etl_results = etl_search(query, settings)
+    return (knowledge_results + etl_results)[: settings.vector_top_k * 2]
+
+
 def databricks_query(query: str, settings: Settings) -> str:
     if settings.databricks_enabled:
         return (
