@@ -34,9 +34,9 @@ def orchestrator_agent(state: WorkflowState, memory: MemoryManager, settings: Se
     user_memory = memory.read_user_memory(state["user_id"])
     trace.append("orchestrator: loaded user-scoped memory")
 
-    if not state.get("retrieved_context"):
+    if not state.get("vector_search_done", False):
         next_agent = "vector_search"
-    elif not state.get("databricks_result"):
+    elif not state.get("databricks_done", False):
         next_agent = "databricks_analyst"
     else:
         next_agent = "done"
@@ -60,12 +60,19 @@ def orchestrator_agent(state: WorkflowState, memory: MemoryManager, settings: Se
 def vector_search_agent(state: WorkflowState, settings: Settings) -> WorkflowState:
     trace = list(state.get("trace", []))
     context = vector_search(state["sanitized_input"], settings)
-    trace.append(f"vector_search_agent: retrieved {len(context)} knowledge chunks")
+
+    if context:
+        trace.append(f"vector_search_agent: retrieved {len(context)} knowledge chunks")
+    else:
+        trace.append("vector_search_agent: no matching knowledge chunks found")
+
     return {
+        "vector_search_done": True,
         "retrieved_context": context,
         "tool_calls": state.get("tool_calls", 0) + 1,
         "trace": trace,
     }
+
 
 
 def databricks_analyst_agent(state: WorkflowState, settings: Settings) -> WorkflowState:
@@ -73,10 +80,12 @@ def databricks_analyst_agent(state: WorkflowState, settings: Settings) -> Workfl
     result = databricks_query(state["sanitized_input"], settings)
     trace.append("databricks_analyst_agent: produced structured-data analysis")
     return {
+        "databricks_done": True,
         "databricks_result": result,
         "tool_calls": state.get("tool_calls", 0) + 1,
         "trace": trace,
     }
+
 
 
 def finalize_response(state: WorkflowState, memory: MemoryManager) -> WorkflowState:
