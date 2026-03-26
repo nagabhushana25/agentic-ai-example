@@ -16,6 +16,7 @@ class WorkflowState(TypedDict, total=False):
     databricks_done: bool
     retrieved_context: list[str]
     databricks_result: str
+    csv_analysis_result: str
     skill_matches: list[str]
     summary: str
     final_answer: str

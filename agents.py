@@ -8,7 +8,8 @@ from config import Settings
 from memory_manager import MemoryManager
 from state import WorkflowState
 from tools import (databricks_query, load_skill_library,
-                    vector_search,combined_context_search)
+                    vector_search,combined_context_search,
+                    csv_metric_query)
 
 def get_llm(settings: Settings) -> ChatOpenAI:
     if not settings.llm_enabled:
@@ -141,8 +142,36 @@ def vector_search_agent(state: WorkflowState, settings: Settings) -> WorkflowSta
 
 
 
+# def databricks_analyst_agent(state: WorkflowState, settings: Settings) -> WorkflowState:
+#     trace = list(state.get("trace", []))
+#     result = databricks_query(state["sanitized_input"], settings)
+#     trace.append("databricks_analyst_agent: produced structured-data analysis")
+#     return {
+#         "databricks_done": True,
+#         "databricks_result": result,
+#         "tool_calls": state.get("tool_calls", 0) + 1,
+#         "trace": trace,
+#     }
+
+
 def databricks_analyst_agent(state: WorkflowState, settings: Settings) -> WorkflowState:
     trace = list(state.get("trace", []))
+    query = state["sanitized_input"].lower()
+
+    metric_words = ["sum", "total", "count", "average", "avg", "min", "max"]
+    file_words = [".csv", "gross_amount", "resolution_minutes", "story_points", "unit_price", "orders", "tickets", "backlog"]
+
+    if any(word in query for word in metric_words) and any(word in query for word in file_words):
+        result = csv_metric_query(state["sanitized_input"], settings)
+        trace.append("databricks_analyst_agent: computed CSV metric result")
+        return {
+            "databricks_done": True,
+            "csv_analysis_result": result,
+            "databricks_result": result,
+            "tool_calls": state.get("tool_calls", 0) + 1,
+            "trace": trace,
+        }
+
     result = databricks_query(state["sanitized_input"], settings)
     trace.append("databricks_analyst_agent: produced structured-data analysis")
     return {
@@ -151,6 +180,7 @@ def databricks_analyst_agent(state: WorkflowState, settings: Settings) -> Workfl
         "tool_calls": state.get("tool_calls", 0) + 1,
         "trace": trace,
     }
+
 
 
 # def finalize_response(state: WorkflowState, memory: MemoryManager) -> WorkflowState:
@@ -170,7 +200,7 @@ def databricks_analyst_agent(state: WorkflowState, settings: Settings) -> Workfl
 #         f"Retrieved context:\n{retrieved or '- No matching knowledge found.'}\n\n"
 #         f"Databricks analysis:\n{state.get('databricks_result', 'Not generated.')}\n"
 #     )
-# 
+#
 #     trace.append("finalizer: built final response")
 #     memory.append_user_memory(state["user_id"], "Most recent request involved the multi-agent assignment scaffold.")
 #     memory.append_session_turn(

@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 import re
 from pathlib import Path
+import csv
+
 
 from config import Settings
 
@@ -73,3 +75,101 @@ def databricks_query(query: str, settings: Settings) -> str:
 
 def load_skill_library(skills_root: Path) -> list[str]:
     return [path.read_text(encoding="utf-8").strip() for path in sorted(skills_root.glob("*.txt"))]
+
+
+def csv_metric_query(query: str, settings: Settings) -> str:
+    query_lower = query.lower()
+
+    file_map = {
+        "orders.csv": settings.data_root / "bronze" / "orders.csv",
+        "customers.csv": settings.data_root / "bronze" / "customers.csv",
+        "support_tickets.csv": settings.data_root / "bronze" / "support_tickets.csv",
+        "backlog_items.csv": settings.data_root / "bronze" / "backlog_items.csv",
+        "products.csv": settings.data_root / "bronze" / "products.csv",
+    }
+
+    target_file = None
+    for name, path in file_map.items():
+        if name in query_lower:
+            target_file = path
+            break
+
+    if target_file is None:
+        if "gross_amount" in query_lower or "order" in query_lower:
+            target_file = settings.data_root / "bronze" / "orders.csv"
+        elif "resolution_minutes" in query_lower or "ticket" in query_lower:
+            target_file = settings.data_root / "bronze" / "support_tickets.csv"
+        elif "story_points" in query_lower or "backlog" in query_lower:
+            target_file = settings.data_root / "bronze" / "backlog_items.csv"
+
+    if target_file is None or not target_file.exists():
+        return "No matching CSV file found for the query."
+
+    operation = None
+    if any(word in query_lower for word in ["sum", "total"]):
+        operation = "sum"
+    elif any(word in query_lower for word in ["count", "how many"]):
+        operation = "count"
+    elif any(word in query_lower for word in ["average", "avg", "mean"]):
+        operation = "avg"
+    elif "max" in query_lower:
+        operation = "max"
+    elif "min" in query_lower:
+        operation = "min"
+
+    if operation is None:
+        return "Could not identify the requested operation. Use sum, count, average, min, or max."
+
+    candidate_columns = [
+        "gross_amount",
+        "discount_amount",
+        "return_amount",
+        "quantity",
+        "resolution_minutes",
+        "first_response_minutes",
+        "story_points",
+        "unit_price",
+    ]
+
+    column = None
+    for candidate in candidate_columns:
+        if candidate in query_lower:
+            column = candidate
+            break
+
+    rows: list[dict[str, str]] = []
+    with target_file.open("r", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        rows = list(reader)
+
+    if operation == "count":
+        return f"Count from {target_file.name}: {len(rows)}"
+
+    if column is None:
+        return "Could not identify the target numeric column in the query."
+
+    values: list[float] = []
+    for row in rows:
+        raw_value = row.get(column)
+        if raw_value is None or raw_value == "":
+            continue
+        try:
+            values.append(float(raw_value))
+        except ValueError:
+            continue
+
+    if not values:
+        return f"No numeric values found for column '{column}' in {target_file.name}."
+
+    if operation == "sum":
+        result = sum(values)
+    elif operation == "avg":
+        result = sum(values) / len(values)
+    elif operation == "max":
+        result = max(values)
+    elif operation == "min":
+        result = min(values)
+    else:
+        return "Unsupported operation."
+
+    return f"{operation.upper()} of {column} from {target_file.name}: {result:.2f}"
